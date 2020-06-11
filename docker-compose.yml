@@ -4,5 +4,6 @@ services:
     image: percona/percona-server:5.7
     ports:
       - 3306:3306
+    command: ["mysqld", "--innodb_buffer_pool_size=5G", "--innodb_flush_method=O_DIRECT"]
     environment:
       MYSQL_ROOT_PASSWORD: tests
