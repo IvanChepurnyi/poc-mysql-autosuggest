@@ -90,15 +90,20 @@ export default function (connectionSettings) {
         },
         suggestKeywords(keyword) {
             const trigram = ngram.trigram(keyword).join(' ');
-
-            connection.connect();
+            let startTime;
+            connection.connect(() => {
+                startTime = new Date();
+            });
             connection.query({
                 sql: 'SELECT suggestion, MATCH (trigram) AGAINST (? IN NATURAL LANGUAGE MODE) as score FROM product_suggestions WHERE MATCH(trigram) AGAINST(? IN NATURAL LANGUAGE MODE) LIMIT 5',
                 values: [trigram, trigram]
             }, (err, result) => {
+                console.log('Query time: ' + (((new Date()).getTime() - startTime.getTime())/1000) + 's');
+
                 for (let item of result) {
                     console.log('Suggestion: ' + item.suggestion + ', score: ' + item.score)
                 }
+
 
                 connection.end()
             })
